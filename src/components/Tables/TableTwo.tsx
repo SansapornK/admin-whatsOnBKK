@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
+import Link from "next/link";
 
 interface Coordinates {
   lat: number;
@@ -55,7 +56,7 @@ const TableTwo = () => {
       </div>
 
       {/* Table Headers */}
-      <div className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <p className="font-medium">Event Name</p>
         </div>
@@ -65,13 +66,16 @@ const TableTwo = () => {
         <div className="col-span-1 flex items-center">
           <p className="font-medium">Area</p>
         </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <p className="font-medium">Edit</p>
+        </div>
       </div>
 
       {/* Table Rows */}
       {events.length > 0 ? (
         events.map((event) => (
           <div
-            className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+            className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5"
             key={event._id}
           >
             {/* Event Name */}
@@ -95,6 +99,17 @@ const TableTwo = () => {
               <p className="text-sm text-black dark:text-white">
                 {event.location.area}
               </p>
+            </div>
+
+            {/* Edit Button */}
+            <div className="col-span-1 flex items-center justify-center">
+            <Link
+              href={`/edit/${event._id}`} // Redirects to the edit page with the event's ID
+              className="inline-flex items-center justify-center rounded bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-opacity-90"
+            >
+              Edit
+            </Link>
+
             </div>
           </div>
         ))
