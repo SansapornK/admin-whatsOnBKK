@@ -14,9 +14,9 @@ app.prepare().then(() => {
   server.use('/public/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
   // Custom route for events or other API routes
-  server.post('/api/addEvent', (req, res) => {
-    // Handle your custom POST logic here
-  });
+  // server.post('/api/addEvent', (req, res) => {
+  //   // Handle your custom POST logic here
+  // });
 
   // All other requests will be handled by Next.js
   server.all('*', (req, res) => {
