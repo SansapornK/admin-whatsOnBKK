@@ -79,8 +79,8 @@ const TableTwo = () => {
       </div>
 
       {/* Table Headers */}
-      <div className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
-        <div className="col-span-3 flex items-center">
+      <div className="grid grid-cols-10 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
+        <div className="col-span-2 flex items-center">
           <p className="font-medium">Event Name</p>
         </div>
         <div className="col-span-2 hidden items-center sm:flex">
@@ -104,11 +104,11 @@ const TableTwo = () => {
       {events.length > 0 ? (
         events.map((event) => (
           <div
-            className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5"
+            className="grid grid-cols-10 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5"
             key={event._id}
           >
             {/* Event Name */}
-            <div className="col-span-3 flex items-center">
+            <div className="col-span-2 flex items-center">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <p className="text-sm text-black dark:text-white">
                   {event.name}
@@ -116,20 +116,15 @@ const TableTwo = () => {
               </div>
             </div>
 
-            {/* Date & Time */}
+            {/* Date */}
             <div className="col-span-2 hidden items-center sm:flex">
               <p className="text-sm text-black dark:text-white">
-              {event.dateStart
-      ? format(new Date(event.dateStart), "MMM dd, yyyy")
-      : "N/A"}{" "}
-    -{" "}
-    {event.dateEnd
-      ? format(new Date(event.dateEnd), "MMM dd, yyyy")
-      : "N/A"}
+                {event.dateStart ? format(new Date(event.dateStart), "MMM dd, yyyy") : "N/A"}{" "}-{" "}
+                {event.dateEnd ? format(new Date(event.dateEnd), "MMM dd, yyyy"): "N/A"}
               </p>
             </div>
 
-            {/* Date & Time */}
+            {/* Time */}
             <div className="col-span-2 hidden items-center sm:flex">
               <p className="text-sm text-black dark:text-white">
                 {event.timeStart} - {event.timeEnd}
