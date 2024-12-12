@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -86,7 +87,6 @@ const EditEventPage = ({ params }: { params: { id: string } }) => {
       alert("Failed to update event.");
     }
   };
-
 
   if (loading) return <p>Loading...</p>;
 
@@ -247,6 +247,36 @@ const EditEventPage = ({ params }: { params: { id: string } }) => {
                 </div>
 
                 <div className="mb-6">
+                  <div className="flex flex-col gap-2">
+                      {formData.images.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between rounded border px-4 py-2"
+                        >
+                          <span className="text-sm text-black">{formData.images[0]}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Remove file from images array
+                              setFormData((prev) => ({
+                                ...prev,
+                                images: prev.images.filter((_, i) => i !== index),
+                              }));
+                              // Clear the input field for a consistent UX
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = "";
+                              }
+                            }}
+                            className="ml-4 rounded bg-red-500 px-3 py-1 text-white"
+                          >
+                            X
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                </div>
+
+                {/* <div className="mb-6">
                   <label className="mb-3 block text-sm font-medium text-black">Attach file (Image)</label>
                   <input
                     ref={fileInputRef}
@@ -255,7 +285,7 @@ const EditEventPage = ({ params }: { params: { id: string } }) => {
                     onChange={handleInputChange}
                     className="w-full rounded border-[1.5px] px-5 py-3 text-black"
                   />
-                </div>
+                </div> */}
 
                 <div className="mb-6">
                   <button

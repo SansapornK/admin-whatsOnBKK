@@ -287,50 +287,50 @@ const AddEventPage = () => {
                     className="w-full rounded border-[1.5px] px-5 py-3 text-black"
                   ></textarea>
                 </div>
-                {/* File Upload */}
-<div className="mb-6">
-  <label className="mb-3 block text-sm font-medium text-black">
-    Attach file (Image)
-  </label>
-  <input
-    type="file"
-    name="images[]"
-    multiple
-    ref={fileInputRef} // Reference to clear file input
-    onChange={handleChange}
-    className="mb-3 w-full cursor-pointer rounded-lg border-[1.5px] px-5 py-3"
-  />
-  {/* Display selected files */}
-  {formData.images.length > 0 && (
-    <div className="flex flex-col gap-2">
-      {formData.images.map((file, index) => (
-        <div
-          key={index}
-          className="flex items-center justify-between rounded border px-4 py-2"
-        >
-          <span className="text-sm text-black">{file.name}</span>
-          <button
-            type="button"
-            onClick={() => {
-              // Remove file from images array
-              setFormData((prev) => ({
-                ...prev,
-                images: prev.images.filter((_, i) => i !== index),
-              }));
-              // Clear the input field for a consistent UX
-              if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-              }
-            }}
-            className="ml-4 rounded bg-red-500 px-3 py-1 text-white"
-          >
-            X
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+               {/* File Upload */}
+                <div className="mb-6">
+                  <label className="mb-3 block text-sm font-medium text-black">
+                    Attach file (Image)
+                  </label>
+                  <input
+                    type="file"
+                    name="images[]"
+                    multiple
+                    ref={fileInputRef} // Reference to clear file input
+                    onChange={handleChange}
+                    className="mb-3 w-full cursor-pointer rounded-lg border-[1.5px] px-5 py-3"
+                  />
+                  {/* Display selected files */}
+                  {formData.images.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                      {formData.images.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between rounded border px-4 py-2"
+                        >
+                          <span className="text-sm text-black">{file.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Remove file from images array
+                              setFormData((prev) => ({
+                                ...prev,
+                                images: prev.images.filter((_, i) => i !== index),
+                              }));
+                              // Clear the input field for a consistent UX
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = "";
+                              }
+                            }}
+                            className="ml-4 rounded bg-red-500 px-3 py-1 text-white"
+                          >
+                            X
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Submit Button */}
                 <button
