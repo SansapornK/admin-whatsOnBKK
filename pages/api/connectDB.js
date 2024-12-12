@@ -1,20 +1,22 @@
-
-import { MongoClient } from 'mongodb';
-
-const uri = process.env.MONGODB_URI;
+import { MongoClient } from "mongodb";
 
 let cachedClient = null;
+let cachedDb = null;
 
 export default async function connectDB() {
-  if (cachedClient) {
-    return cachedClient;
+  if (cachedDb) {
+    return { client: cachedClient, db: cachedDb };
   }
 
-  const client = await MongoClient.connect(uri, {
+  const client = await MongoClient.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
 
+  const db = client.db(process.env.MONGODB_DB_NAME); // Ensure this matches your MongoDB database name
+
   cachedClient = client;
-  return client;
+  cachedDb = db;
+
+  return { client, db };
 }

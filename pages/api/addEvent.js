@@ -1,8 +1,8 @@
 // pages/api/addEvent.js
 import fs from "fs";
 import path from "path";
-import { Formidable } from 'formidable';
-import connectDB from "../api/connectDB";  // Import your MongoDB connection logic
+import { Formidable } from "formidable";
+import connectDB from "../api/connectDB";
 
 export const config = {
   api: {
@@ -21,9 +21,8 @@ const handler = async (req, res) => {
         return res.status(500).json({ error: "Error parsing form data." });
       }
 
-      // Extracting fields
-      const { name, description, type, date, time, attendees } = fields;
-
+      const { name, description, type, dateStart, dateEnd, timeStart, timeEnd } = fields;
+      
       const location = {
         area: fields["location[area]"],
         address: fields["location[address]"],
@@ -33,20 +32,23 @@ const handler = async (req, res) => {
         },
       };
 
-      const images = files["images[]"] ? (Array.isArray(files["images[]"]) ? files["images[]"] : [files["images[]"]]) : [];
+      const images = files["images[]"]
+        ? Array.isArray(files["images[]"])
+          ? files["images[]"]
+          : [files["images[]"]]
+        : [];
 
       try {
         const imagePaths = await Promise.all(
           images.map(async (image) => {
             const filePath = path.join("public", "uploads", image.originalFilename);
-            await fs.promises.rename(image.filepath, filePath); // Move image to public folder
-            return `/uploads/${image.originalFilename}`; // Store the image path
+            await fs.promises.rename(image.filepath, filePath);
+            return `/uploads/${image.originalFilename}`;
           })
         );
 
-        // Prepare event data for insertion into MongoDB
         const eventData = {
-          name: name[0],  // Use first item of the array
+          name: name[0],
           description: description[0],  // Use first item of the array
           type: type[0],  // Use first item of the array
           location: {
@@ -57,29 +59,27 @@ const handler = async (req, res) => {
               lng: location.coordinates.lng,  // Directly use lng value
             }
           },
-          date: new Date(date),  // Use the date directly (already correct)
-          time: time[0],  // Use first item of the time array
+          dateStart: new Date(dateStart),   
+          dateEnd: new Date(dateEnd), 
+          timeStart: timeStart[0],  
+          timeEnd: timeEnd[0],
           images: imagePaths,  // Use the image paths (should already be an array)
         };
 
+        // Use the updated connectDB
+        const { db } = await connectDB(); // Destructure db
+        const eventsCollection = db.collection("events");
 
-        // Connect to MongoDB
-        const client = await connectDB();
-        const db = client.db('whatsonbkk');  // Use your database name
-        const eventsCollection = db.collection('events');  // Collection where events are stored
-
-        // Insert the event into the database
         const result = await eventsCollection.insertOne(eventData);
 
-        // Respond with success
-        return res.status(200).json({ message: "Event created successfully!", eventId: result.insertedId });
-      } catch (fileErr) {
-        console.error("Error moving files:", fileErr);
-        return res.status(500).json({ error: "Error moving uploaded files." });
+        res.status(200).json({ message: "Event created successfully!", eventId: result.insertedId });
+      } catch (error) {
+        console.error("Error processing the event:", error);
+        res.status(500).json({ error: "Error processing the event." });
       }
     });
   } else {
-    res.status(405).json({ error: "Method Not Allowed" }); // Handle non-POST requests
+    res.status(405).json({ error: "Method Not Allowed" });
   }
 };
 

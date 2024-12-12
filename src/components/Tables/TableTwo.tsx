@@ -20,8 +20,10 @@ interface Event {
   description: string;
   type: string;
   location: Location;
-  date: string; // MongoDB stores date as a string in ISO format
-  time: string;
+  dateStart: string;
+  dateEnd: string;
+  timeStart: string;
+  timeEnd: string;
   images: string[]; // Array of image URLs
 }
 
@@ -47,6 +49,27 @@ const TableTwo = () => {
     fetchEvents();
   }, []);
 
+  const deleteEvent = async (id: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/deleteEvent?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setEvents((prevEvents) => prevEvents.filter((event) => event._id !== id));
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete event:", errorData);
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
+
+
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="px-4 py-6 md:px-6 xl:px-7.5">
@@ -61,13 +84,19 @@ const TableTwo = () => {
           <p className="font-medium">Event Name</p>
         </div>
         <div className="col-span-2 hidden items-center sm:flex">
-          <p className="font-medium">Date & Time</p>
+          <p className="font-medium">Date</p>
+        </div>
+        <div className="col-span-2 hidden items-center sm:flex">
+          <p className="font-medium">Time</p>
         </div>
         <div className="col-span-1 flex items-center">
           <p className="font-medium">Area</p>
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <p className="font-medium">Edit</p>
+        </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <p className="font-medium">Delete</p>
         </div>
       </div>
 
@@ -90,7 +119,20 @@ const TableTwo = () => {
             {/* Date & Time */}
             <div className="col-span-2 hidden items-center sm:flex">
               <p className="text-sm text-black dark:text-white">
-                {format(new Date(event.date), "MMM dd, yyyy")} {event.time}
+              {event.dateStart
+      ? format(new Date(event.dateStart), "MMM dd, yyyy")
+      : "N/A"}{" "}
+    -{" "}
+    {event.dateEnd
+      ? format(new Date(event.dateEnd), "MMM dd, yyyy")
+      : "N/A"}
+              </p>
+            </div>
+
+            {/* Date & Time */}
+            <div className="col-span-2 hidden items-center sm:flex">
+              <p className="text-sm text-black dark:text-white">
+                {event.timeStart} - {event.timeEnd}
               </p>
             </div>
 
@@ -109,6 +151,16 @@ const TableTwo = () => {
             >
               Edit
             </Link>
+
+            </div>
+            {/* Delete Button */}
+            <div className="col-span-1 flex items-center justify-center">
+            <button
+                onClick={() => deleteEvent(event._id)}
+                className="inline-flex items-center justify-center rounded bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
+              >
+                Delete
+              </button>
 
             </div>
           </div>

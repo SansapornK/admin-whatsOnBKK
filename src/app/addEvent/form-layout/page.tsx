@@ -3,10 +3,14 @@ import { useState,useRef } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import SelectGroupOne from "@/components/SelectGroup/SelectGroupOne";  // Type selection component
-import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";  // Time selection component
-import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";  // Date picker component
+import SelectGroupTypes from "@/components/SelectGroup/SelectGroupTypes";  // Type selection component
+import DatePickerStart from "@/components/FormElements/DatePicker/DatePickerStart" // Time selection component
+import DatePickerEnd from "@/components/FormElements/DatePicker/DatePickerEnd";
+import SelectGroupTimeStart from "@/components/SelectGroup/SelectGroupTimeStart";
+import SelectGroupTimeEnd from "@/components/SelectGroup/SelectGroupTimeEnd";
 import axios from "axios";
+
+
 
 // Define a type for the form data to ensure correct types for each field
 interface EventFormData {
@@ -21,8 +25,10 @@ interface EventFormData {
       lng: number;
     };
   };
-  date: string;
-  time: string;
+  dateStart: string;
+  dateEnd: string;
+  timeStart: string;
+  timeEnd: string;
   images: File[]; // Array of File objects for image files
 }
 
@@ -31,8 +37,10 @@ const AddEventPage = () => {
     name: "",
     description: "",  // This will be used for 'details' input
     type: "",
-    date: "",
-    time: "",
+    dateStart: "",
+    dateEnd: "",
+    timeStart: "",
+    timeEnd:"",
     location: {
       area: "",
       address: "",
@@ -71,7 +79,7 @@ const AddEventPage = () => {
           [name]: value,
         },
       }));
-    } else if (["date", "time", "type"].includes(name)) {
+    } else if (["dateStart", "dateEnd", "timeStart", "timeEnd","type"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -111,8 +119,10 @@ const AddEventPage = () => {
     data.append("name", formData.name);
     data.append("description", formData.description);
     data.append("type", formData.type);
-    data.append("date", formData.date);
-    data.append("time", formData.time);
+    data.append("dateStart", formData.dateStart);
+    data.append("dateEnd", formData.dateEnd);
+    data.append("timeStart", formData.timeStart);
+    data.append("timeEnd", formData.timeEnd);
 
     data.append("location[area]", formData.location.area);
     data.append("location[address]", formData.location.address);
@@ -124,7 +134,7 @@ const AddEventPage = () => {
       data.append("images[]", image); // Correctly append image file as part of the FormData
     });
 
-    if (!formData.name || !formData.description || !formData.date || !formData.time) {
+    if (!formData.name || !formData.description || !formData.dateStart || !formData.dateEnd || !formData.timeStart || !formData.timeEnd) {
       alert("Please fill all required fields.");
       return;
     }
@@ -137,8 +147,10 @@ const AddEventPage = () => {
         name: "",
         description: "",
         type: "",
-        date: "",
-        time: "",
+        dateStart: "",
+        dateEnd: "",
+        timeStart: "",
+        timeEnd:"",
         location: {
           area: "",
           address: "",
@@ -185,13 +197,23 @@ const AddEventPage = () => {
                 {/* Date, Time, and Type */}
                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                   <div className="w-full xl:w-1/3">
-                    <DatePickerOne value={formData.date} onChange={(e) => handleChange(e)} />
+                    <DatePickerStart value={formData.dateStart} onChange={(e) => handleChange(e)} />
                   </div>
                   <div className="w-full xl:w-1/3">
-                    <SelectGroupTwo value={formData.time} onChange={handleChange} />
+                    <DatePickerEnd value={formData.dateEnd} onChange={(e) => handleChange(e)} />
+                  </div>
+                </div>
+                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                  <div className="w-full xl:w-1/3">
+                      <SelectGroupTimeStart value={formData.timeStart} onChange={handleChange} />
                   </div>
                   <div className="w-full xl:w-1/3">
-                    <SelectGroupOne value={formData.type} onChange={handleChange} />
+                      <SelectGroupTimeEnd value={formData.timeEnd} onChange={handleChange} />
+                  </div>
+                </div>
+                <div className="mb-4.5">
+                <div className="w-full xl:w-1/3">
+                      <SelectGroupTypes value={formData.type} onChange={handleChange} />
                   </div>
                 </div>
                 {/* Area */}
@@ -266,18 +288,50 @@ const AddEventPage = () => {
                   ></textarea>
                 </div>
                 {/* File Upload */}
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-black">
-                    Attach file (Image)
-                  </label>
-                  <input
-                    type="file"
-                    name="images[]"
-                    multiple // Allow multiple files to be selected
-                    onChange={handleChange}
-                    className="w-full cursor-pointer rounded-lg border-[1.5px] px-5 py-3"
-                  />
-                </div>
+<div className="mb-6">
+  <label className="mb-3 block text-sm font-medium text-black">
+    Attach file (Image)
+  </label>
+  <input
+    type="file"
+    name="images[]"
+    multiple
+    ref={fileInputRef} // Reference to clear file input
+    onChange={handleChange}
+    className="mb-3 w-full cursor-pointer rounded-lg border-[1.5px] px-5 py-3"
+  />
+  {/* Display selected files */}
+  {formData.images.length > 0 && (
+    <div className="flex flex-col gap-2">
+      {formData.images.map((file, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-between rounded border px-4 py-2"
+        >
+          <span className="text-sm text-black">{file.name}</span>
+          <button
+            type="button"
+            onClick={() => {
+              // Remove file from images array
+              setFormData((prev) => ({
+                ...prev,
+                images: prev.images.filter((_, i) => i !== index),
+              }));
+              // Clear the input field for a consistent UX
+              if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+              }
+            }}
+            className="ml-4 rounded bg-red-500 px-3 py-1 text-white"
+          >
+            X
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
                 {/* Submit Button */}
                 <button
                   type="submit"
