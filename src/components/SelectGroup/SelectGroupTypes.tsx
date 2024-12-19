@@ -32,13 +32,13 @@ const SelectGroupTypes: React.FC <SelectGroupTypesProps> = ({ value, onChange })
           <option value="" disabled className="text-body dark:text-bodydark">
             Select event types
           </option>
-          <option value="Exhibition" className="text-body dark:text-bodydark">
+          <option value="exhibition" className="text-body dark:text-bodydark">
             Exhibition
           </option>
-          <option value="Music" className="text-body dark:text-bodydark">
+          <option value="music" className="text-body dark:text-bodydark">
             Music
           </option>
-          <option value="Festival" className="text-body dark:text-bodydark">
+          <option value="festival" className="text-body dark:text-bodydark">
             Festival
           </option>
         </select>
